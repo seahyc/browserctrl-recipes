@@ -22,6 +22,7 @@ site has a recipe here. Update with `browserctrl recipe tap update`.
 | `shopee.sg/orders` | Full Shopee SG purchase history | |
 | `taobao.com/orders` | Full Taobao purchase history (已买到的宝贝) | Needs a tab you opened yourself on 已买到的宝贝; Taobao logs out pages that automation loads |
 | `carousell.sg/chats` | Carousell inbox threads, buying and selling | |
+| `carousell.sg/messages` | Messages in one Carousell chat | Pass `offer_id=` from `carousell.sg/chats`; needs browserctrl with WebSocket capture |
 | `carousell.sg/orders` | Carousell checkout purchases for one tab | Item shape not yet observed |
 
 ## Contribute

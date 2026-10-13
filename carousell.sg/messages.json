@@ -1,0 +1,59 @@
+{
+  "name": "carousell.sg/messages",
+  "description": "Messages in one Carousell chat, newest first. Pass offer_id=<id> from carousell.sg/chats.",
+  "keywords": [
+    "messages",
+    "chat",
+    "conversation",
+    "inbox",
+    "deal"
+  ],
+  "kind": "read",
+  "origin": "https://www.carousell.sg",
+  "warm_path": "/inbox/",
+  "pace_ms": 400,
+  "auth": {
+    "session": {
+      "from": "ws",
+      "host": "ws-f3cb6187-cb42-4cd1-95fc-1c46f8856006.sendbird.com",
+      "frame": "LOGI",
+      "path": "key",
+      "expires_path": "expires_at",
+      "max_age_s": 3000
+    }
+  },
+  "request": {
+    "method": "GET",
+    "url": "https://api-f3cb6187-cb42-4cd1-95fc-1c46f8856006.sendbird.com/v3/group_channels/F3CB6187-CB42-4CD1-95FC-1C46F8856006-carousell-{{offer_id}}/messages?is_sdk=true&prev_limit=100&next_limit=0&include=true&reverse=true&message_ts={{cursor}}&include_reply_type=none",
+    "credentials": "omit",
+    "headers": {
+      "Session-Key": "{{auth.session}}",
+      "App-Id": "F3CB6187-CB42-4CD1-95FC-1C46F8856006"
+    }
+  },
+  "params": {
+    "offer_id": "",
+    "cursor": "9999999999999"
+  },
+  "paginate": {
+    "type": "cursor",
+    "param": "cursor",
+    "items": "messages",
+    "next": "messages[-1].created_at",
+    "dedupe": "message_id",
+    "max_pages": 50
+  },
+  "output": {
+    "id": "message_id",
+    "at_ms": "created_at",
+    "from": "user.nickname",
+    "user_id": "user.user_id",
+    "text": "message",
+    "type": "custom_type"
+  },
+  "notes": "Carousell chat runs on Sendbird. The REST session key appears only in the Sendbird WebSocket LOGI frame, which browserctrl captures from the recipe's tab; without a fresh one the runner reloads that tab so the page logs in again.",
+  "verified": {
+    "at": "2026-10-13",
+    "result": "returned the full message history of a chat, including offer and system messages, matching the chat in the UI"
+  }
+}

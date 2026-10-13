@@ -1,0 +1,59 @@
+{
+  "name": "carousell.sg/chats",
+  "description": "All Carousell inbox threads (buying = offer_type 'made', selling = 'received'), newest first.",
+  "keywords": [
+    "chats",
+    "inbox",
+    "offers",
+    "messages",
+    "buying",
+    "selling"
+  ],
+  "kind": "read",
+  "origin": "https://www.carousell.sg",
+  "warm_path": "/inbox/",
+  "pace_ms": 400,
+  "auth": {
+    "csrf": {
+      "from": "html",
+      "path": "/inbox/",
+      "regex": "\"csrfToken\":\"([^\"]+)\""
+    }
+  },
+  "request": {
+    "method": "GET",
+    "url": "/ds/offer/1.0/me/?_path=%2F1.0%2Fme%2F&count={{count}}&l=en&type=all&latest_price_created={{cursor}}",
+    "headers": {
+      "csrf-token": "{{auth.csrf}}"
+    }
+  },
+  "params": {
+    "count": 50,
+    "cursor": "{{now_iso}}"
+  },
+  "paginate": {
+    "type": "cursor",
+    "param": "cursor",
+    "items": "data.offers",
+    "next": "data.offers[-1].latest_price_created",
+    "dedupe": "id",
+    "max_pages": 200
+  },
+  "output": {
+    "id": "id",
+    "role": "offer_type",
+    "state": "state",
+    "product_sold": "is_product_sold",
+    "price": "latest_price",
+    "at": "latest_price_created",
+    "title": "product.title",
+    "listing_price": "product.price",
+    "other_user": "user.username",
+    "last_message": "latest_price_message"
+  },
+  "notes": "state: O = open chat, A = accepted offer, D = declined. A confirmed purchase is role=made with state=A; deals agreed purely in chat stay O. Message bodies need the Sendbird channel_url (not covered here).",
+  "verified": {
+    "at": "2026-10-12",
+    "result": "returned the same threads as the inbox in the UI"
+  }
+}

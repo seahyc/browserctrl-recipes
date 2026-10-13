@@ -1,0 +1,42 @@
+{
+  "name": "shopee.sg/orders",
+  "description": "Full Shopee SG purchase history (all tabs, including cancelled), newest first.",
+  "keywords": [
+    "orders",
+    "purchases",
+    "history",
+    "shopping"
+  ],
+  "kind": "read",
+  "origin": "https://shopee.sg",
+  "warm_path": "/user/purchase",
+  "pace_ms": 500,
+  "request": {
+    "method": "GET",
+    "url": "/api/v4/order/get_all_order_and_checkout_list?limit={{limit}}&offset={{offset}}"
+  },
+  "params": {
+    "limit": 20
+  },
+  "paginate": {
+    "type": "offset",
+    "param": "offset",
+    "step": "{{limit}}",
+    "items": "new_data.order_or_checkout_data",
+    "stop_when_fewer_than": "{{limit}}",
+    "max_pages": 200
+  },
+  "output": {
+    "order_id": "order_list_detail.info_card.order_id",
+    "shop": "order_list_detail.info_card.order_list_cards[0].shop_info.shop_name",
+    "status": "order_list_detail.status.list_view_status_label.text",
+    "total_cents": "order_list_detail.info_card.final_total",
+    "items": "order_list_detail.info_card.order_list_cards[*].parcel_cards[*].product_info.item_groups[*].items[*].name",
+    "updated_at": "order_list_detail.shipping.tracking_info.ctime"
+  },
+  "notes": "Money fields are in 1/100000 SGD (3234000 = S$32.34). The page's own fetch wrapper adds Shopee's anti-fraud headers, so this must run in-page. Some old orders have no tracking ctime.",
+  "verified": {
+    "at": "2026-10-12",
+    "result": "returned the same orders as the purchase list in the UI, full history"
+  }
+}

@@ -1,0 +1,61 @@
+{
+  "name": "carousell.sg/orders",
+  "description": "Carousell checkout (Buy button) purchases for one tab: TAB_TO_PAY, TAB_IN_PROGRESS, TAB_COMPLETED, TAB_RETURNS or TAB_CANCELLED.",
+  "keywords": [
+    "orders",
+    "purchases",
+    "checkout",
+    "history"
+  ],
+  "kind": "read",
+  "origin": "https://www.carousell.sg",
+  "warm_path": "/purchases/completed/",
+  "pace_ms": 400,
+  "auth": {
+    "csrf": {
+      "from": "html",
+      "path": "/inbox/",
+      "regex": "\"csrfToken\":\"([^\"]+)\""
+    }
+  },
+  "request": {
+    "method": "POST",
+    "url": "/aps/fg/2.0/orders/?l=en",
+    "headers": {
+      "content-type": "application/json",
+      "csrf-token": "{{auth.csrf}}"
+    },
+    "body": {
+      "countryCode": "SG",
+      "createdFrom": null,
+      "createdTo": null,
+      "deliveryMethod": "DELIVERY_METHOD_UNSPECIFIED",
+      "page": "PAGE_MY_PURCHASES",
+      "pageSize": 50,
+      "pageToken": "{{cursor}}",
+      "searchKeyword": "",
+      "showId": "",
+      "tab": "{{tab}}",
+      "userId": 0
+    }
+  },
+  "params": {
+    "tab": "TAB_COMPLETED",
+    "cursor": ""
+  },
+  "paginate": {
+    "type": "cursor",
+    "param": "cursor",
+    "items": "orderHistory",
+    "next": "nextPageToken",
+    "max_pages": 100
+  },
+  "output": {
+    "order": ""
+  },
+  "notes": "Output mapping is a passthrough: the account has no checkout orders yet, so the order shape is unobserved. Tighten the mapping once an exemplar exists.",
+  "verified": {
+    "at": "2026-10-12",
+    "result": "200 on all five tabs; no checkout orders on the test account, so the item shape is unobserved"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "name": "taobao.com/orders",
+  "description": "Full Taobao purchase history (已买到的宝贝, all tabs), newest first, one row per order.",
+  "keywords": [
+    "orders",
+    "purchases",
+    "history",
+    "shopping",
+    "已买到的宝贝",
+    "淘宝"
+  ],
+  "kind": "read",
+  "origin": "https://buyertrade.taobao.com",
+  "warm_path": "/trade/itemlist/list_bought_items.htm",
+  "tab": "handoff",
+  "handoff_match": "^https://buyertrade\\.taobao\\.com/trade/itemlist/",
+  "pace_ms": 800,
+  "settle_ms": 0,
+  "paginate": {
+    "start": 1,
+    "max_pages": 50
+  },
+  "js": "async (page) => { if (!window.lib?.mtop?.request) return { error: 'page has no lib.mtop client; reopen 已买到的宝贝' }; let r; try { r = await window.lib.mtop.request({ api: 'mtop.taobao.order.queryboughtlistV2', v: '1.0', type: 'POST', dataType: 'json', valueType: 'original', timeout: 8000, ttid: '201200@taobao_iphone_99.99.99', data: { tabCode: 'all', appVersion: '3.0', OrderType: 'OrderList', appName: 'tborder', templateConfigVersion: 0, page, condition: { inner: 1, deviceLevel: 'high', version: '1.0.0', reqFrom: 'tbpc' }, forceBoughtlist4: 4 } }); } catch (e) { return { error: String(e.ret || e) }; } const D = r.data.data, root = r.data.hierarchy.structure[r.data.hierarchy.root] || []; const items = root.filter(k => k.startsWith('MainGroup_')).map(k => { const id = k.slice(10), g = D[k].fields, s = D['sellerInfo_' + id]?.fields || {}; const rows = Object.keys(D).filter(x => x.startsWith('item_' + id + '_')).map(x => D[x].fields), lines = rows.map(f => f.item); const pay = Object.keys(D).find(x => x.startsWith('pay_' + id)); return { order_id: id, created_at: new Date(Number(g.createOrderTime || s.orderCreateTime)).toISOString(), shop: s.seller?.shopName, status: s.status?.text ?? s.status, paid: (pay ? D[pay].fields.actualFee?.value : rows.find(f => f.itemPay?.actualFee?.value)?.itemPay.actualFee.value) ?? null, items: lines.map(i => ({ title: i.title, sku: i.skuText, qty: Number(i.quantity), price: i.priceInfo?.actualTotalFee })) }; }); const pc = r.data.global.pageControl || {}; return { items, next: pc.hasMore ? pc.nextPageIndex : null }; }",
+  "output": {
+    "order_id": "order_id",
+    "created_at": "created_at",
+    "shop": "shop",
+    "status": "status",
+    "paid": "paid",
+    "items": "items"
+  },
+  "notes": "Only works in a tab the human opened (automation-started loads of buyertrade.taobao.com redirect to login). Uses the page's own lib.mtop client so Taobao's signing and baxia hooks apply. ecode=1 with the PC ttid returns FAIL_SYS_SERVICE_INNER_FAULT; the mobile ttid with an object condition succeeds. Responses are Ultron components keyed by order id, flattened by the js hook. Paid amount comes from the pay_ component (multi-item orders) or the line's itemPay.actualFee; MainGroup.orderPrice mixes yuan and fen, so it is not used.",
+  "verified": {
+    "at": "2026-10-12",
+    "result": "returned the same orders and paid amounts as 已买到的宝贝 in the UI, including an order the UI paging did not show"
+  }
+}

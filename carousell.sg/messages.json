@@ -1,6 +1,6 @@
 {
   "name": "carousell.sg/messages",
-  "description": "Messages in one Carousell chat, newest first. Pass offer_id=<id> from carousell.sg/chats.",
+  "description": "Messages in one Carousell chat, newest first. Pass offer_id=<offer_id> from carousell.sg/chats (not its id, which Carousell reports as a signed 32-bit number).",
   "keywords": [
     "messages",
     "chat",

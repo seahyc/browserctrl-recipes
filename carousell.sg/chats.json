@@ -41,6 +41,7 @@
   },
   "output": {
     "id": "id",
+    "offer_id": "legacy_offer_id",
     "role": "offer_type",
     "state": "state",
     "product_sold": "is_product_sold",
